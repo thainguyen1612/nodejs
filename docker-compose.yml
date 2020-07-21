@@ -1,30 +1,33 @@
 version: '3'
 
 services:
-    app-chat:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        image: app-chat-node
-        container_name: app-chat
-        restart: unless-stopped
-        volumes:
-            - .:/home/node/app
-        command: node app.js
-        networks:
-            - app-chat-networks
-    webserver-chat:
-        image: nginx:alpine
-        container_name: webserver-chat
-        restart: unless-stopped
-        ports:
-            - "3001:80"
-            - "3302:443"
-        volumes:
-            - .:/var/www
-            - ./.docker/nginx/conf.d:/etc/nginx/conf.d
-        networks:
-            - app-chat-networks
+  app-chat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: app-chat-node
+    container_name: app-chat
+    restart: unless-stopped
+    volumes:
+      - ./:/code
+      - node_modules:/code/node_modules
+    networks:
+      - app-chat-networks
+
+  webserver-chat:
+      image: nginx:alpine
+      container_name: webserver-chat
+      restart: unless-stopped
+      ports:
+          - "30021:80"
+          - "3302:443"
+      volumes:
+          - ./.docker/nginx/conf.d:/etc/nginx/conf.d
+      networks:
+          - app-chat-networks
 networks:
-    app-chat-networks:
-        driver: bridge
+  app-chat-networks:
+    driver: bridge
+volumes:
+  node_modules:
+

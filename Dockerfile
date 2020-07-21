@@ -1,19 +1,20 @@
 FROM node:12-alpine
 
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+# Set work directory
+RUN mkdir /code
+WORKDIR /code
 
-RUN npm install express-generator nodemon -g
-
-WORKDIR /home/node/app
-
-COPY . .
-
-USER node
+COPY package*.json /code/
 
 RUN npm install
 
-COPY --chown=node:node . .
+COPY . /code
 
-EXPOSE 3000
+COPY docker-entrypoint.sh /usr/local/bin/
 
-CMD [ "node", "app.js" ]
+RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
+    && ln -s /usr/local/bin/docker-entrypoint.sh /
+
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
+EXPOSE 8080
